@@ -1,20 +1,31 @@
 import pytest
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.login_page import LoginPage  # adjust import as needed
+from dotenv import load_dotenv
+import os
 
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def driver():
     driver = webdriver.Chrome()
+    driver.get("http://localhost:8080")
     yield driver
     driver.quit()
 
-def get_title(self):
-    return self.driver.title
+@pytest.fixture(scope="session")
+def logged_in_driver(driver):
+    username = os.getenv("LOGIN_USERNAME")
+    password = os.getenv("LOGIN_PASSWORD")
 
-def wait_for_title(driver, title_substring, timeout=10):
-    """Waits until the page title contains the given substring."""
-    WebDriverWait(driver, timeout).until(
-        EC.title_contains(title_substring)
-    )
+    login_page = LoginPage(driver)
+    login_page.login(username, password)
+    return driver
+
+@pytest.fixture(scope="session")
+def credentials():
+    username = os.getenv("LOGIN_USERNAME")
+    password = os.getenv("LOGIN_PASSWORD")
+    return username, password
+
+load_dotenv()
+
+
