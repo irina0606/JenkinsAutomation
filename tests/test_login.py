@@ -10,14 +10,17 @@ from pages.login_page import *
 from pages.dashboard_page import *
 import pytest
 
-def test_login(driver, credentials):
+def test_login(driver_factory, credentials):
     username, password = credentials
+    driver = driver_factory()
     login_page = LoginPage(driver)
     print("Actual title:", driver.title)
     assert "Sign in [Jenkins]" in driver.title
     login_page.login(username, password)
+    driver.find_element(*login_page.login_button).click()
     wait_for_title(driver, "Dashboard [Jenkins]")
     assert "Dashboard [Jenkins]" in driver.title
+
 
 
 """def test_login_with_invalid_credentials(driver):
@@ -50,7 +53,8 @@ def test_login_with_empty_pw(driver):
     ("aaa", ""),
 ])
 
-def test_login_invalid_inputs(driver, username, pw):
+def test_login_invalid_inputs(driver_factory, username, pw):
+    driver = driver_factory()
     login_page = LoginPage(driver)
     login_page.login(username, pw)
     driver.find_element(*login_page.login_button).click()
@@ -58,14 +62,35 @@ def test_login_invalid_inputs(driver, username, pw):
     wait_until_visible(driver, login_page.error)
     assert "Invalid username or password" in error
 
-
-def test_keep_me_signedin(driver, credentials, tmp_path):
-    username, pw = credentials
+def test_keep_me_signedin(driver_factory, credentials):
+    driver = driver_factory()
+    username, password = credentials
     login_page = LoginPage(driver)
-    checkbox = driver.find_element(*login_page.remember_me_checkbox)
-    #tick_checkbox(checkbox)
-    login_page.login(username, pw)
-    tick_checkbox(checkbox)
+    login_page.login(username, password)
+
+    tick_checkbox(driver.find_element(*login_page.remember_me_checkbox))
+    driver.find_element(*login_page.login_button).click()
+    wait_for_title(driver, "Dashboard [Jenkins]")
+
+    cookies = driver.get_cookies()
+    driver.quit()
+
+    new_driver = driver_factory()
+    new_driver.get("http://localhost:8080")
+    for cookie in cookies:
+        new_driver.add_cookie(cookie)
+    new_driver.refresh()
+
+    # Check if dashboard is loaded, otherwise fail with screenshot
+    try:
+        wait_for_title(new_driver, "Dashboard [Jenkins]", timeout=10)
+        assert "Dashboard" in new_driver.title
+    except Exception:
+        new_driver.save_screenshot("keep_me_signed_in_failed.png")
+        raise AssertionError(
+            "Keep me signed in failed: Jenkins redirected to Login page"
+        )
+
 
     """cookies_file = tmp_path / "cookies.json"
     with open(cookies_file, "w") as f:
