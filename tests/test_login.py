@@ -1,9 +1,3 @@
-import json
-import time
-
-from selenium.webdriver.chrome import webdriver
-
-from pages import login_page
 from utils.waits import *
 from utils.helpers import *
 from pages.login_page import *
@@ -62,7 +56,7 @@ def test_login_invalid_inputs(driver_factory, username, pw):
     wait_until_visible(driver, login_page.error)
     assert "Invalid username or password" in error
 
-def test_keep_me_signedin(driver_factory, credentials):
+def test_keep_me_signedin(driver_factory, credentials): # the feature has a defect
     driver = driver_factory()
     username, password = credentials
     login_page = LoginPage(driver)

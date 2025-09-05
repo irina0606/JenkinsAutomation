@@ -1,24 +1,25 @@
 import time
 import pytest
-import utils.waits
-from pages.header import Header
-from utils.waits import wait_until_clickable, wait_until_visible, wait_for_title
 
+from pages import login_page
+from pages.header import *
+from utils.waits import *
+from pages.login_page import *
 
-#text = input()
 
 def test_logout(logged_in_driver):
-
     header = Header(logged_in_driver)
     header.logout()
     wait_for_title(logged_in_driver, "Sign in [Jenkins]")
     assert "Sign in [Jenkins]" in logged_in_driver.title
 
-text = "m"
+
 def test_search(logged_in_driver):
+    text = ""
 
     header = Header(logged_in_driver)
     header.search(text)
+    #time.sleep(10)
 
     if text == "ddd":
         assert f"No results for" in header.get_no_result()

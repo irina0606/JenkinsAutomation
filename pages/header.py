@@ -10,7 +10,7 @@ class Header:
         self.notification_icon = (By.ID, "visible-am-insertion")
         self.warning_icon = (By.ID, "visible-sec-am-container")
         self.admin_dropdown = (By.CLASS_NAME, "jenkins-menu-dropdown-chevron")
-        self.logout_button = (By.XPATH, "//span[normalize-space()='log out']")
+        self.logout_button = (By.XPATH, "//a[@href='/logout']//*[name()='svg']")
         #self.results = (By.ID, "search-results")
         self.results = (By.CSS_SELECTOR, ".jenkins-command-palette__results__item")
         self.no_result = (By.XPATH, "//*[contains(text(), 'No results for')]")

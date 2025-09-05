@@ -3,6 +3,8 @@ from selenium import webdriver
 from pages.login_page import LoginPage  # adjust import as needed
 from dotenv import load_dotenv
 import os
+from utils.waits import wait_for_title
+
 
 @pytest.fixture(scope="session")
 def driver_factory():
@@ -26,15 +28,15 @@ def credentials():
     return username, password
 
 @pytest.fixture(scope="function")
-def logged_in_driver(driver_factory):
-    username = os.getenv("LOGIN_USERNAME")
-    password = os.getenv("LOGIN_PASSWORD")
-
+def logged_in_driver(driver_factory, credentials):
     driver = driver_factory()
-
+    username, password = credentials
     login_page = LoginPage(driver)
     login_page.login(username, password)
-    return driver
+    driver.find_element(*login_page.login_button).click()  # 🔥 perform the click
+    wait_for_title(driver, "Dashboard [Jenkins]")
+    yield driver
+    driver.quit()
 
 load_dotenv()
 
