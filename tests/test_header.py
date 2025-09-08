@@ -48,3 +48,10 @@ def test_search_version2(logged_in_driver, text_, expected):
 
     elif expected == "help":
         assert "Get help using Jenkins search" in header.get_results
+
+def test_open_dashboardDropdown(logged_in_driver):
+    header = Header(logged_in_driver)
+    header.open_adminDropdown(logged_in_driver)
+    element = logged_in_driver.find_element(*header.admin_dropdown)
+    time.sleep(5)
+    assert element.is_displayed(), "Admin dropdown menu did not open as expected"

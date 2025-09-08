@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from conftest import driver_factory
+from utils.helpers import click_element, hover_element
 from utils.waits import (wait_until_visible, wait_until_clickable, wait_until_present)
 from selenium.common.exceptions import TimeoutException
 
@@ -7,9 +9,11 @@ class Header:
         self.driver = driver
         self.search_icon = (By.ID, "button-open-command-palette")
         self.search_field = (By.ID, "command-bar")
+        self.admin_icon = (By.CLASS_NAME, "icon-md")
         self.notification_icon = (By.ID, "visible-am-insertion")
         self.warning_icon = (By.ID, "visible-sec-am-container")
-        self.admin_dropdown = (By.CLASS_NAME, "jenkins-menu-dropdown-chevron")
+        self.admin_dropdown_button = (By.CLASS_NAME, "jenkins-menu-dropdown-chevron")
+        self.admin_dropdown = (By.CLASS_NAME, "jenkins-dropdown")
         self.logout_button = (By.XPATH, "//a[@href='/logout']//*[name()='svg']")
         #self.results = (By.ID, "search-results")
         self.results = (By.CSS_SELECTOR, ".jenkins-command-palette__results__item")
@@ -49,4 +53,10 @@ class Header:
 
     def get_no_result(self):
         return self.driver.find_element(*self.no_result).text
+
+    def open_adminDropdown(self, driver_factory):
+        wait_until_visible(self.driver, self.admin_icon)
+        hover_element(self.driver, self.admin_dropdown_button)
+        click_element(self.driver, self.admin_dropdown_button)
+        wait_until_visible(self.driver, self.admin_dropdown)
 

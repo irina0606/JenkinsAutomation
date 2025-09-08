@@ -13,28 +13,33 @@ class DashboardPage:
 
     def __init__(self, driver_factory):
         self.driver = driver_factory
-        self.dashboard_button = (By.XPATH, '//*[@id="breadcrumbs"]/li[1]')
+        self.dashboard_element = (By.XPATH, '//*[@id="breadcrumbs"]/li[1]')
         self.dashboard_chevron = (By.CSS_SELECTOR, ".jenkins-menu-dropdown-chevron")
-        self.dashboard_dropdown = (By.CLASS_NAME, "tippy-box")
+        self.dashboard_dropdown = (By.XPATH, "//div[@data-placement='bottom-start']")
         self.manageJenkins_chevron = (By.XPATH, "//a[normalize-space()='Manage Jenkins']")
         self.manageJenkins = (By.XPATH, "//a[@class='jenkins-dropdown__item '][normalize-space()='Manage Jenkins']")
         self.system_configs = (By.XPATH, "//iframe[@id = 'nr-ext-rsicon']")
+        self.new_item = (By.CLASS_NAME, "task-link-wrapper")
 
-    def open_dashboardDropdown(self, driver_factory):
-        wait_until_visible(self.driver, self.dashboard_button)
-        hover_element(self.driver, self.dashboard_button)
+    def open_dashboardDropdown(self):
+        wait_until_visible(self.driver, self.dashboard_element)
+        hover_element(self.driver, self.dashboard_element)
         hover_element(self.driver, self.dashboard_chevron)
         click_element(self.driver, self.dashboard_chevron)
         wait_until_visible(self.driver, self.dashboard_dropdown)
 
-    def open_systemConfigs(self, driver_factory):
-        self.open_dashboardDropdown(driver_factory)
+    def open_systemConfig_frame(self):
+        self.open_dashboardDropdown()
         wait_until_visible(self.driver, self.dashboard_dropdown)
         hover_element(self.driver, self.manageJenkins)
-        iframe = driver_factory.find_element(self.system_configs)
-        driver_factory.switch_to.frame(iframe)
+        iframe = self.driver.find_element(self.system_configs)
+        self.driver.switch_to.frame(iframe)
         wait_until_present(self.driver, self.system_configs)
 
+    def navigate_to_new_item_page(self):
+        wait_until_visible(self.driver, self.new_item)
+        hover_element(self.driver, self.new_item)
+        click_element(self.driver, self.new_item)
 
 
 

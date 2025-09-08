@@ -33,7 +33,7 @@ def logged_in_driver(driver_factory, credentials):
     username, password = credentials
     login_page = LoginPage(driver)
     login_page.login(username, password)
-    driver.find_element(*login_page.login_button).click()  # 🔥 perform the click
+    driver.find_element(*login_page.login_button).click()
     wait_for_title(driver, "Dashboard [Jenkins]")
     yield driver
     driver.quit()
